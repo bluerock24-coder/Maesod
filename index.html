@@ -1,0 +1,379 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>โปรแกรมทัวร์แม่สอด-พบพระ (15-16 พ.ย.)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chosen Palette: Warm Neutrals (#f7f3e8, #a68a64, #594a40) -->
+    <!-- Application Structure Plan: The SPA is designed as a two-part interactive guide. The primary 'Itinerary' view uses a main-tab ('โปรแกรมทริป'/'ภาพรวม') and sub-tab ('วันที่ 1'/'วันที่ 2') system. This allows users to easily switch between daily schedules, which are presented as clear, card-based timelines instead of a static list. This structure is highly scannable and intuitive. The secondary 'Overview' view fulfills the data-analysis aspect by presenting a 'Trip Budget Breakdown' via a Donut chart and key trip themes. This separation of 'Plan' (Itinerary) and 'Analysis' (Overview) makes the information more organized and user-friendly than the original linear document. -->
+    <!-- Visualization & Content Choices:
+        - Itinerary (Day 1 & 2): Report Info (Sequential stops) -> Goal (Organize/Inform) -> Presentation (HTML/Tailwind card-based timeline) -> Interaction (JS toggling visibility based on 'วันที่ 1'/'วันที่ 2' sub-nav clicks) -> Justification (Transforms static text into an interactive, scannable schedule).
+        - Trip Budget (Invented Data): Report Info (Implied trip costs) -> Goal (Inform/Compare Composition) -> Presentation (Donut Chart) -> Interaction (Hover tooltips) -> Justification (Provides a 'dashboard' view of the trip and fulfills Chart.js requirement) -> Library (Chart.js/Canvas).
+        - Main Navigation: Report Info (Different aspects of the trip) -> Goal (Organize) -> Presentation (HTML/Tailwind tabs) -> Interaction (JS click to show/hide main content divs) -> Justification (Standard, clear SPA navigation).
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            background-color: #f7f3e8;
+            color: #594a40;
+            font-family: 'Kanit', sans-serif; 
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&display=swap');
+        .nav-btn {
+            @apply px-4 py-2 rounded-lg font-semibold transition-colors duration-200;
+        }
+        .nav-btn-active {
+            @apply bg-[#594a40] text-white;
+        }
+        .nav-btn-inactive {
+            @apply bg-white text-[#a68a64] hover:bg-[#d4c2a5];
+        }
+        .sub-nav-btn {
+            @apply px-4 py-2 rounded-md font-medium transition-colors duration-200;
+        }
+        .sub-nav-btn-active {
+            @apply bg-[#a68a64] text-white;
+        }
+        .sub-nav-btn-inactive {
+            @apply bg-transparent text-[#a68a64] hover:bg-white;
+        }
+        .timeline-card {
+            @apply bg-white rounded-lg shadow-md p-4 mb-4 flex items-start space-x-4 transition-all duration-300 hover:shadow-lg;
+        }
+        .timeline-time {
+            @apply font-bold text-[#a68a64] w-20 text-right pt-1;
+        }
+        .timeline-content {
+            @apply flex-1 border-l-2 border-[#d4c2a5] pl-4;
+        }
+        .timeline-title {
+            @apply font-semibold text-lg text-[#594a40] mb-1;
+        }
+        .timeline-desc {
+            @apply text-sm text-gray-600;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-[#594a40] mb-2">ทริปแม่สอด & พบพระ</h1>
+            <p class="text-xl font-light text-[#a68a64]">15 - 16 พฤศจิกายน (2 วัน 1 คืน)</p>
+        </header>
+
+        
+        <nav class="flex justify-center space-x-2 mb-8 p-2 bg-[#d4c2a5] rounded-lg">
+            <button id="navItinerary" class="nav-btn nav-btn-active flex-1">
+                📅 โปรแกรมทริป
+            </button>
+            <button id="navOverview" class="nav-btn nav-btn-inactive flex-1">
+                📊 ภาพรวม
+            </button>
+        </nav>
+
+        
+        <main id="mainContent">
+
+            
+            <section id="itineraryContent">
+                <div class="bg-white rounded-lg shadow-xl p-6">
+                    <p class="text-center text-gray-600 mb-6">
+                        นี่คือแผนการเดินทางแบบละเอียดสำหรับทริป 2 วัน 1 คืนของคุณ คลิกเพื่อสลับระหว่างวันที่ 1 และ วันที่ 2 เพื่อดูรายละเอียดกิจกรรมในแต่ละวัน
+                    </p>
+                    
+                    <nav class="flex justify-center space-x-2 mb-6 border-b border-[#d4c2a5] pb-4">
+                        <button id="navDay1" class="sub-nav-btn sub-nav-btn-active">วันที่ 1: วัฒนธรรมชายแดน</button>
+                        <button id="navDay2" class="sub-nav-btn sub-nav-btn-inactive">วันที่ 2: ธรรมชาติ (อ.พบพระ)</button>
+                    </nav>
+
+                    
+                    <div id="day1Content">
+                        <div class="timeline-card">
+                            <span class="timeline-time">08:00 น.</span>
+                            <div class="timeline-content">
+                                <h3 class="timeline-title">มื้อเช้าเริ่มต้นวัน</h3>
+                                <p class="timeline-desc">เติมพลังด้วยอาหารเช้าท้องถิ่น "ข้าวซอยอิสลาม" หรือ "โรตีโอ่ง" หอมกรุ่น</p>
+                            </div>
+                        </div>
+                        <div class="timeline-card">
+                            <span class="timeline-time">09:30 น.</span>
+                            <div class="timeline-content">
+                                <h3 class="timeline-title">วัดไทยวัฒนาราม</h3>
+                                <p class="timeline-desc">ชมสถาปัตยกรรมพม่าจำลองอันงดงาม วิหารพระมหามุนี และเจดีย์สีทองอร่าม</p>
+                            </div>
+                        </div>
+                        <div class="timeline-card">
+                            <span class="timeline-time">11:00 น.</span>
+                            <div class="timeline-content">
+                                <h3 class="timeline-title">วัดมณีไพรสณฑ์</h3>
+                                <p class="timeline-desc">ไหว้หลวงพ่อทันใจ และชมเจดีย์ที่มีรูปปั้นแมงป่องยักษ์เฝ้าอยู่</p>
+                            </div>
+                        </div>
+                        <div class="timeline-card">
+                            <span class="timeline-time">12:30 น.</span>
+                            <div class="timeline-content">
+                                <h3 class="timeline-title">มื้อเที่ยงรสเด็ด</h3>
+                                <p class="timeline-desc">รับประทานอาหารกลางวันที่ร้าน "ครัวเทพา" หรือร้านอาหารพื้นเมืองผสมผสาน</p>
+                            </div>
+                        </div>
+                        <div class="timeline-card">
+                            <span class="timeline-time">14:00 น.</span>
+                            <div class="timeline-content">
+                                <h3 class="timeline-title">ตลาดริมเมย และ สะพานมิตรภาพ</h3>
+                                <p class="timeline-desc">ช้อปปิ้งสินค้าพื้นเมืองจากพม่า ถ่ายรูปกับป้าย "ตะวันตกสุดแดนสยาม" และชมสะพานมิตรภาพไทย-พม่า</p>
+                            </div>
+                        </div>
+                        <div class="timeline-card">
+                            <span class="timeline-time">16:30 น.</span>
+                            <div class="timeline-content">
+                                <h3 class="timeline-title">วัดพระธาตุดอยหินกิ่ว (Unseen)</h3>
+                                <p class="timeline-desc">ชมเจดีย์บนก้อนหินหมิ่นเหม่ริมผา และรอชมวิวพระอาทิตย์ตกดินฝั่งพม่า</p>
+                            </div>
+                        </div>
+                        <div class="timeline-card">
+                            <span class="timeline-time">18:30 น.</span>
+                            <div class="timeline-content">
+                                <h3 class="timeline-title">มื้อเย็นสุดอลังการ</h3>
+                                <p class="timeline-desc">ดินเนอร์ที่ร้าน "ข้าวเม่า-ข้าวฟ่าง" ในบรรยากาศป่าและน้ำตกจำลองสุดยิ่งใหญ่</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                    <div id="day2Content" class="hidden">
+                        <div class="timeline-card">
+                            <span class="timeline-time">08:00 น.</span>
+                            <div class="timeline-content">
+                                <h3 class="timeline-title">มื้อเช้าและเตรียมตัว</h3>
+                                <p class="timeline-desc">รับประทานอาหารเช้าที่โรงแรม หรือตลาดเช้าแม่สอด</p>
+                            </div>
+                        </div>
+                        <div class="timeline-card">
+                            <span class="timeline-time">09:00 น.</span>
+                            <div class="timeline-content">
+                                <h3 class="timeline-title">มุ่งหน้าสู่ อ.พบพระ</h3>
+                                <p class="timeline-desc">เดินทางออกจากตัวเมืองแม่สอด มุ่งหน้าสัมผัสธรรมชาติ (ประมาณ 30-45 นาที)</p>
+                            </div>
+                        </div>
+                        <div class="timeline-card">
+                            <span class="timeline-time">10:00 น.</span>
+                            <div class="timeline-content">
+                                <h3 class="timeline-title">น้ำตกพาเจริญ</h3>
+                                <p class="timeline-desc">ชมความงามของน้ำตกหินปูนที่ไหลลดหลั่นกัน 97 ชั้น ท่ามกลางอากาศร่มรื่น</p>
+                            </div>
+                        </div>
+                        <div class="timeline-card">
+                            <span class="timeline-time">11:30 น.</span>
+                            <div class="timeline-content">
+                                <h3 class="timeline-title">น้ำตกร้อน (บ่อน้ำพุร้อนแม่กาษา)</h3>
+                                <p class="timeline-desc">แช่เท้าผ่อนคลายในธารน้ำอุ่นธรรมชาติ หรือสนุกกับการต้มไข่ในบ่อน้ำร้อน</p>
+                            </div>
+                        </div>
+                        <div class="timeline-card">
+                            <span class="timeline-time">13:00 น.</span>
+                            <div class="timeline-content">
+                                <h3 class="timeline-title">มื้อเที่ยงที่พบพระ</h3>
+                                <p class="timeline-desc">รับประทานอาหารกลางวันง่ายๆ ใน อ.พบพระ</p>
+                            </div>
+                        </div>
+                        <div class="timeline-card">
+                            <span class="timeline-time">14:00 น.</span>
+                            <div class="timeline-content">
+                                <h3 class="timeline-title">ไร่กุหลาบ (ถ้ามีเวลา)</h3>
+                                <p class="timeline-desc">แวะชม "ไร่กุหลาบปฐมเพชร" หรือไร่อื่นๆ ที่ขึ้นชื่อของ อ.พบพระ</p>
+                            </div>
+                        </div>
+                        <div class="timeline-card">
+                            <span class="timeline-time">15:30 น.</span>
+                            <div class="timeline-content">
+                                <h3 class="timeline-title">กลับแม่สอด (ซื้อของฝาก)</h3>
+                                <p class="timeline-desc">เดินทางกลับเข้าตัวเมือง แวะซื้อของฝาก เช่น ถั่วแปยี, ผ้าทอ ที่ตลาดสด</p>
+                            </div>
+                        </div>
+                        <div class="timeline-card">
+                            <span class="timeline-time">16:30 น.</span>
+                            <div class="timeline-content">
+                                <h3 class="timeline-title">ปิดท้ายทริปด้วยกาแฟ</h3>
+                                <p class="timeline-desc">พักผ่อนที่คาเฟ่เก๋ๆ ในแม่สอด ก่อนเดินทางกลับโดยสวัสดิภาพ</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            
+            <section id="overviewContent" class="hidden">
+                <p class="text-center text-gray-600 mb-6">
+                    ส่วนนี้คือภาพรวมและข้อมูลสรุปของทริป เพื่อช่วยให้คุณเห็นภาพรวมของการผจญภัยในครั้งนี้ รวมถึงการแบ่งส่วนงบประมาณโดยประมาณ
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <div class="bg-white rounded-lg shadow-xl p-6">
+                        <h3 class="text-2xl font-semibold text-[#594a40] mb-4 border-b border-[#d4c2a5] pb-2">ไฮไลท์ของทริป</h3>
+                        <ul class="space-y-3">
+                            <li class="flex items-center">
+                                <span class="text-xl mr-3">🕌</span>
+                                <div>
+                                    <h4 class="font-semibold">วัฒนธรรมสองแผ่นดิน</h4>
+                                    <p class="text-sm text-gray-600">สัมผัสสถาปัตยกรรมพม่าและวิถีชีวิตการค้าชายแดน</p>
+                                </div>
+                            </li>
+                            <li class="flex items-center">
+                                <span class="text-xl mr-3">🌅</span>
+                                <div>
+                                    <h4 class="font-semibold">วิวพระอาทิตย์ตก Unseen</h4>
+                                    <p class="text-sm text-gray-600">ชมวิวตะวันลับฟ้าที่วัดพระธาตุดอยหินกิ่ว</p>
+                                </div>
+                            </li>
+                            <li class="flex items-center">
+                                <span class="text-xl mr-3">🌊</span>
+                                <div>
+                                    <h4 class="font-semibold">ธรรมชาติบำบัด</h4>
+                                    <p class="text-sm text-gray-600">ผ่อนคลายที่น้ำตกพาเจริญและแช่เท้าที่บ่อน้ำร้อน</p>
+                                </div>
+                            </li>
+                            <li class="flex items-center">
+                                <span class="text-xl mr-3">🍽️</span>
+                                <div>
+                                    <h4 class="font-semibold">อาหารท้องถิ่น</h4>
+                                    <p class="text-sm text-gray-600">ลิ้มรสโรตีโอ่ง, ข้าวซอยอิสลาม และอาหารในป่าจินตนาการ</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    
+                    <div class="bg-white rounded-lg shadow-xl p-6">
+                        <h3 class="text-2xl font-semibold text-[#594a40] mb-4 text-center">สัดส่วนงบประมาณ (โดยประมาณ)</h3>
+                        <div class="relative w-full max-w-md mx-auto h-80 md:h-96">
+                            <canvas id="budgetChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            
+            const navItinerary = document.getElementById('navItinerary');
+            const navOverview = document.getElementById('navOverview');
+            const itineraryContent = document.getElementById('itineraryContent');
+            const overviewContent = document.getElementById('overviewContent');
+
+            const navDay1 = document.getElementById('navDay1');
+            const navDay2 = document.getElementById('navDay2');
+            const day1Content = document.getElementById('day1Content');
+            const day2Content = document.getElementById('day2Content');
+
+            
+            navItinerary.addEventListener('click', () => {
+                itineraryContent.classList.remove('hidden');
+                overviewContent.classList.add('hidden');
+                
+                navItinerary.classList.add('nav-btn-active');
+                navItinerary.classList.remove('nav-btn-inactive');
+                navOverview.classList.add('nav-btn-inactive');
+                navOverview.classList.remove('nav-btn-active');
+            });
+
+            navOverview.addEventListener('click', () => {
+                itineraryContent.classList.add('hidden');
+                overviewContent.classList.remove('hidden');
+
+                navItinerary.classList.add('nav-btn-inactive');
+                navItinerary.classList.remove('nav-btn-active');
+                navOverview.classList.add('nav-btn-active');
+                navOverview.classList.remove('nav-btn-inactive');
+            });
+
+            
+            navDay1.addEventListener('click', () => {
+                day1Content.classList.remove('hidden');
+                day2Content.classList.add('hidden');
+
+                navDay1.classList.add('sub-nav-btn-active');
+                navDay1.classList.remove('sub-nav-btn-inactive');
+                navDay2.classList.add('sub-nav-btn-inactive');
+                navDay2.classList.remove('sub-nav-btn-active');
+            });
+
+            navDay2.addEventListener('click', () => {
+                day1Content.classList.add('hidden');
+                day2Content.classList.remove('hidden');
+
+                navDay1.classList.add('sub-nav-btn-inactive');
+                navDay1.classList.remove('sub-nav-btn-active');
+                navDay2.classList.add('sub-nav-btn-active');
+                navDay2.classList.remove('sub-nav-btn-inactive');
+            });
+
+            
+            const budgetCtx = document.getElementById('budgetChart').getContext('2d');
+            const budgetChart = new Chart(budgetCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['ค่าอาหารและเครื่องดื่ม', 'ค่าเดินทาง (เหมารถ/น้ำมัน)', 'ค่าที่พัก', 'ค่าของฝาก/อื่นๆ'],
+                    datasets: [{
+                        label: 'สัดส่วนงบประมาณ',
+                        data: [35, 30, 20, 15],
+                        backgroundColor: [
+                            '#a68a64', 
+                            '#d4c2a5', 
+                            '#8c7a6b', 
+                            '#bda580'  
+                        ],
+                        borderColor: '#ffffff',
+                        borderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#594a40',
+                                font: {
+                                    family: "'Kanit', sans-serif"
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    const item = tooltipItems[0];
+                                    let label = item.chart.data.labels[item.dataIndex];
+                                    if (Array.isArray(label)) {
+                                      return label.join(' ');
+                                    } else {
+                                      return label;
+                                    }
+                                },
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        label += context.parsed + '%';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
